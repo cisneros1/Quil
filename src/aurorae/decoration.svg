@@ -1,44 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- {{full_name}} window frame (Aurorae). Generated from palette.json by tools/build.py. -->
-<svg xmlns="http://www.w3.org/2000/svg" width="160" height="40" viewBox="0 0 160 40">
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="30" viewBox="0 0 160 30">
   <!-- decoration -->
-  <g id="decoration-topleft"><path d="M0,8 A8,8 0 0 1 8,0 L8,8 Z" fill="{{border}}"/><path d="M1,8 A7,7 0 0 1 8,1 L8,8 Z" fill="{{header}}"/></g>
-  <g id="decoration-topright"><path d="M20,0 A8,8 0 0 1 28,8 L20,8 Z" fill="{{border}}"/><path d="M20,1 A7,7 0 0 1 27,8 L20,8 Z" fill="{{header}}"/></g>
-  <g id="decoration-top"><rect x="10" y="0" width="8" height="8" fill="{{border}}"/><rect x="10" y="1" width="8" height="7" fill="{{header}}"/></g>
-  <g id="decoration-left"><rect x="0" y="10" width="8" height="8" fill="{{border}}"/><rect x="1" y="10" width="7" height="8" fill="{{header}}"/></g>
-  <g id="decoration-center"><rect x="10" y="10" width="8" height="8" fill="{{border}}"/><rect x="10" y="10" width="8" height="8" fill="{{header}}"/></g>
-  <g id="decoration-right"><rect x="20" y="10" width="8" height="8" fill="{{border}}"/><rect x="20" y="10" width="7" height="8" fill="{{header}}"/></g>
-  <g id="decoration-bottom"><rect x="10" y="20" width="8" height="8" fill="{{border}}"/><rect x="10" y="20" width="8" height="7" fill="{{header}}"/></g>
-  <g id="decoration-bottomleft"><rect x="0" y="20" width="8" height="8" fill="{{border}}"/><rect x="1" y="20" width="7" height="7" fill="{{header}}"/></g>
-  <g id="decoration-bottomright"><rect x="20" y="20" width="8" height="8" fill="{{border}}"/><rect x="20" y="20" width="7" height="7" fill="{{header}}"/></g>
+  <g id="decoration-topleft"><rect x="0" y="0" width="8" height="8" fill="{{border_active}}"/><rect x="2" y="2" width="6" height="6" fill="{{header}}"/></g>
+  <g id="decoration-top"><rect x="10" y="0" width="8" height="8" fill="{{border_active}}"/><rect x="10" y="2" width="8" height="6" fill="{{header}}"/></g>
+  <g id="decoration-topright"><rect x="20" y="0" width="8" height="8" fill="{{border_active}}"/><rect x="20" y="2" width="6" height="6" fill="{{header}}"/></g>
+  <g id="decoration-left"><rect x="0" y="10" width="8" height="8" fill="{{border_active}}"/><rect x="2" y="10" width="6" height="8" fill="{{header}}"/></g>
+  <g id="decoration-center"><rect x="10" y="10" width="8" height="8" fill="{{header}}"/></g>
+  <g id="decoration-right"><rect x="20" y="10" width="8" height="8" fill="{{border_active}}"/><rect x="20" y="10" width="6" height="8" fill="{{header}}"/></g>
+  <g id="decoration-bottomleft"><rect x="0" y="20" width="8" height="8" fill="{{border_active}}"/><rect x="2" y="20" width="6" height="6" fill="{{header}}"/></g>
+  <g id="decoration-bottom"><rect x="10" y="20" width="8" height="8" fill="{{border_active}}"/><rect x="10" y="20" width="8" height="6" fill="{{header}}"/></g>
+  <g id="decoration-bottomright"><rect x="20" y="20" width="8" height="8" fill="{{border_active}}"/><rect x="20" y="20" width="6" height="6" fill="{{header}}"/></g>
   <!-- decoration-inactive -->
-  <g id="decoration-inactive-topleft"><path d="M40,8 A8,8 0 0 1 48,0 L48,8 Z" fill="{{border}}"/><path d="M41,8 A7,7 0 0 1 48,1 L48,8 Z" fill="{{header_inactive}}"/></g>
-  <g id="decoration-inactive-topright"><path d="M60,0 A8,8 0 0 1 68,8 L60,8 Z" fill="{{border}}"/><path d="M60,1 A7,7 0 0 1 67,8 L60,8 Z" fill="{{header_inactive}}"/></g>
-  <g id="decoration-inactive-top"><rect x="50" y="0" width="8" height="8" fill="{{border}}"/><rect x="50" y="1" width="8" height="7" fill="{{header_inactive}}"/></g>
-  <g id="decoration-inactive-left"><rect x="40" y="10" width="8" height="8" fill="{{border}}"/><rect x="41" y="10" width="7" height="8" fill="{{header_inactive}}"/></g>
-  <g id="decoration-inactive-center"><rect x="50" y="10" width="8" height="8" fill="{{border}}"/><rect x="50" y="10" width="8" height="8" fill="{{header_inactive}}"/></g>
-  <g id="decoration-inactive-right"><rect x="60" y="10" width="8" height="8" fill="{{border}}"/><rect x="60" y="10" width="7" height="8" fill="{{header_inactive}}"/></g>
-  <g id="decoration-inactive-bottom"><rect x="50" y="20" width="8" height="8" fill="{{border}}"/><rect x="50" y="20" width="8" height="7" fill="{{header_inactive}}"/></g>
-  <g id="decoration-inactive-bottomleft"><rect x="40" y="20" width="8" height="8" fill="{{border}}"/><rect x="41" y="20" width="7" height="7" fill="{{header_inactive}}"/></g>
-  <g id="decoration-inactive-bottomright"><rect x="60" y="20" width="8" height="8" fill="{{border}}"/><rect x="60" y="20" width="7" height="7" fill="{{header_inactive}}"/></g>
+  <g id="decoration-inactive-topleft"><rect x="40" y="0" width="8" height="8" fill="{{border}}"/><rect x="42" y="2" width="6" height="6" fill="{{header_inactive}}"/></g>
+  <g id="decoration-inactive-top"><rect x="50" y="0" width="8" height="8" fill="{{border}}"/><rect x="50" y="2" width="8" height="6" fill="{{header_inactive}}"/></g>
+  <g id="decoration-inactive-topright"><rect x="60" y="0" width="8" height="8" fill="{{border}}"/><rect x="60" y="2" width="6" height="6" fill="{{header_inactive}}"/></g>
+  <g id="decoration-inactive-left"><rect x="40" y="10" width="8" height="8" fill="{{border}}"/><rect x="42" y="10" width="6" height="8" fill="{{header_inactive}}"/></g>
+  <g id="decoration-inactive-center"><rect x="50" y="10" width="8" height="8" fill="{{header_inactive}}"/></g>
+  <g id="decoration-inactive-right"><rect x="60" y="10" width="8" height="8" fill="{{border}}"/><rect x="60" y="10" width="6" height="8" fill="{{header_inactive}}"/></g>
+  <g id="decoration-inactive-bottomleft"><rect x="40" y="20" width="8" height="8" fill="{{border}}"/><rect x="42" y="20" width="6" height="6" fill="{{header_inactive}}"/></g>
+  <g id="decoration-inactive-bottom"><rect x="50" y="20" width="8" height="8" fill="{{border}}"/><rect x="50" y="20" width="8" height="6" fill="{{header_inactive}}"/></g>
+  <g id="decoration-inactive-bottomright"><rect x="60" y="20" width="8" height="8" fill="{{border}}"/><rect x="60" y="20" width="6" height="6" fill="{{header_inactive}}"/></g>
   <!-- decoration-maximized -->
-  <g id="decoration-maximized-topleft"><rect x="80" y="0" width="8" height="8" fill="{{border}}"/><rect x="81" y="1" width="7" height="7" fill="{{header}}"/></g>
-  <g id="decoration-maximized-topright"><rect x="100" y="0" width="8" height="8" fill="{{border}}"/><rect x="100" y="1" width="7" height="7" fill="{{header}}"/></g>
-  <g id="decoration-maximized-top"><rect x="90" y="0" width="8" height="8" fill="{{border}}"/><rect x="90" y="1" width="8" height="7" fill="{{header}}"/></g>
-  <g id="decoration-maximized-left"><rect x="80" y="10" width="8" height="8" fill="{{border}}"/><rect x="81" y="10" width="7" height="8" fill="{{header}}"/></g>
-  <g id="decoration-maximized-center"><rect x="90" y="10" width="8" height="8" fill="{{border}}"/><rect x="90" y="10" width="8" height="8" fill="{{header}}"/></g>
-  <g id="decoration-maximized-right"><rect x="100" y="10" width="8" height="8" fill="{{border}}"/><rect x="100" y="10" width="7" height="8" fill="{{header}}"/></g>
-  <g id="decoration-maximized-bottom"><rect x="90" y="20" width="8" height="8" fill="{{border}}"/><rect x="90" y="20" width="8" height="7" fill="{{header}}"/></g>
-  <g id="decoration-maximized-bottomleft"><rect x="80" y="20" width="8" height="8" fill="{{border}}"/><rect x="81" y="20" width="7" height="7" fill="{{header}}"/></g>
-  <g id="decoration-maximized-bottomright"><rect x="100" y="20" width="8" height="8" fill="{{border}}"/><rect x="100" y="20" width="7" height="7" fill="{{header}}"/></g>
+  <g id="decoration-maximized-topleft"><rect x="80" y="0" width="8" height="8" fill="{{header}}"/><rect x="82" y="2" width="6" height="6" fill="{{header}}"/></g>
+  <g id="decoration-maximized-top"><rect x="90" y="0" width="8" height="8" fill="{{header}}"/><rect x="90" y="2" width="8" height="6" fill="{{header}}"/></g>
+  <g id="decoration-maximized-topright"><rect x="100" y="0" width="8" height="8" fill="{{header}}"/><rect x="100" y="2" width="6" height="6" fill="{{header}}"/></g>
+  <g id="decoration-maximized-left"><rect x="80" y="10" width="8" height="8" fill="{{header}}"/><rect x="82" y="10" width="6" height="8" fill="{{header}}"/></g>
+  <g id="decoration-maximized-center"><rect x="90" y="10" width="8" height="8" fill="{{header}}"/></g>
+  <g id="decoration-maximized-right"><rect x="100" y="10" width="8" height="8" fill="{{header}}"/><rect x="100" y="10" width="6" height="8" fill="{{header}}"/></g>
+  <g id="decoration-maximized-bottomleft"><rect x="80" y="20" width="8" height="8" fill="{{header}}"/><rect x="82" y="20" width="6" height="6" fill="{{header}}"/></g>
+  <g id="decoration-maximized-bottom"><rect x="90" y="20" width="8" height="8" fill="{{header}}"/><rect x="90" y="20" width="8" height="6" fill="{{header}}"/></g>
+  <g id="decoration-maximized-bottomright"><rect x="100" y="20" width="8" height="8" fill="{{header}}"/><rect x="100" y="20" width="6" height="6" fill="{{header}}"/></g>
   <!-- decoration-maximized-inactive -->
-  <g id="decoration-maximized-inactive-topleft"><rect x="120" y="0" width="8" height="8" fill="{{border}}"/><rect x="121" y="1" width="7" height="7" fill="{{header_inactive}}"/></g>
-  <g id="decoration-maximized-inactive-topright"><rect x="140" y="0" width="8" height="8" fill="{{border}}"/><rect x="140" y="1" width="7" height="7" fill="{{header_inactive}}"/></g>
-  <g id="decoration-maximized-inactive-top"><rect x="130" y="0" width="8" height="8" fill="{{border}}"/><rect x="130" y="1" width="8" height="7" fill="{{header_inactive}}"/></g>
-  <g id="decoration-maximized-inactive-left"><rect x="120" y="10" width="8" height="8" fill="{{border}}"/><rect x="121" y="10" width="7" height="8" fill="{{header_inactive}}"/></g>
-  <g id="decoration-maximized-inactive-center"><rect x="130" y="10" width="8" height="8" fill="{{border}}"/><rect x="130" y="10" width="8" height="8" fill="{{header_inactive}}"/></g>
-  <g id="decoration-maximized-inactive-right"><rect x="140" y="10" width="8" height="8" fill="{{border}}"/><rect x="140" y="10" width="7" height="8" fill="{{header_inactive}}"/></g>
-  <g id="decoration-maximized-inactive-bottom"><rect x="130" y="20" width="8" height="8" fill="{{border}}"/><rect x="130" y="20" width="8" height="7" fill="{{header_inactive}}"/></g>
-  <g id="decoration-maximized-inactive-bottomleft"><rect x="120" y="20" width="8" height="8" fill="{{border}}"/><rect x="121" y="20" width="7" height="7" fill="{{header_inactive}}"/></g>
-  <g id="decoration-maximized-inactive-bottomright"><rect x="140" y="20" width="8" height="8" fill="{{border}}"/><rect x="140" y="20" width="7" height="7" fill="{{header_inactive}}"/></g>
+  <g id="decoration-maximized-inactive-topleft"><rect x="120" y="0" width="8" height="8" fill="{{header_inactive}}"/><rect x="122" y="2" width="6" height="6" fill="{{header_inactive}}"/></g>
+  <g id="decoration-maximized-inactive-top"><rect x="130" y="0" width="8" height="8" fill="{{header_inactive}}"/><rect x="130" y="2" width="8" height="6" fill="{{header_inactive}}"/></g>
+  <g id="decoration-maximized-inactive-topright"><rect x="140" y="0" width="8" height="8" fill="{{header_inactive}}"/><rect x="140" y="2" width="6" height="6" fill="{{header_inactive}}"/></g>
+  <g id="decoration-maximized-inactive-left"><rect x="120" y="10" width="8" height="8" fill="{{header_inactive}}"/><rect x="122" y="10" width="6" height="8" fill="{{header_inactive}}"/></g>
+  <g id="decoration-maximized-inactive-center"><rect x="130" y="10" width="8" height="8" fill="{{header_inactive}}"/></g>
+  <g id="decoration-maximized-inactive-right"><rect x="140" y="10" width="8" height="8" fill="{{header_inactive}}"/><rect x="140" y="10" width="6" height="8" fill="{{header_inactive}}"/></g>
+  <g id="decoration-maximized-inactive-bottomleft"><rect x="120" y="20" width="8" height="8" fill="{{header_inactive}}"/><rect x="122" y="20" width="6" height="6" fill="{{header_inactive}}"/></g>
+  <g id="decoration-maximized-inactive-bottom"><rect x="130" y="20" width="8" height="8" fill="{{header_inactive}}"/><rect x="130" y="20" width="8" height="6" fill="{{header_inactive}}"/></g>
+  <g id="decoration-maximized-inactive-bottomright"><rect x="140" y="20" width="8" height="8" fill="{{header_inactive}}"/><rect x="140" y="20" width="6" height="6" fill="{{header_inactive}}"/></g>
 </svg>

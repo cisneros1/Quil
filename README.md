@@ -2,8 +2,10 @@
 
 A KDE Plasma 6 Global Theme in two variants:
 
-- **Quil Dark**: ink-black surfaces with gold-ink accents
-- **Quil Light**: warm parchment surfaces with sepia-ink accents
+- **Quil Dark**: deep black with turquoise accents
+- **Quil Light**: a pale companion with deep turquoise accents
+
+The look is based on [BlackTurq](https://github.com/HANCORE-linux/omarchy-blackturq-theme), an [Omarchy](https://omarchy.org) theme by HANCORE: its palette (`#0a0a0a` black, `#8FECD5` turquoise, `#D35F5F` red), square windows with a turquoise border on the focused window, and a turquoise particle-wave wallpaper. BlackTurq is dark-only, so Quil Light is our own derivation.
 
 > Early work in progress. The palette, window decorations and wallpaper are first drafts.
 
@@ -13,8 +15,8 @@ A KDE Plasma 6 Global Theme in two variants:
 |---|---|---|
 | Color schemes | `color-schemes/QuilDark.colors`, `QuilLight.colors` | ✅ draft palette |
 | Plasma style | `plasma/desktoptheme/Quil-Dark`, `Quil-Light` | 🟡 colors only; SVGs fall back to Breeze |
-| Window decorations (Aurorae) | `aurorae/themes/Quil-Dark`, `Quil-Light` | ✅ flat titlebar with rounded top corners |
-| Wallpaper | `wallpapers/Quil` (light + `images_dark`) | ✅ generated from SVG |
+| Window decorations (Aurorae) | `aurorae/themes/Quil-Dark`, `Quil-Light` | ✅ square frame, 2px turquoise border when focused |
+| Wallpaper | `wallpapers/Quil` (light + `images_dark`) | ✅ particle wave, generated from SVG |
 | Splash screen | inside the global theme | ✅ |
 | Panel layout | inside the global theme | 🟡 Plasma default for now |
 | Global themes | `plasma/look-and-feel/com.github.cisneros1.quil.{dark,light}` | ✅ |
@@ -54,8 +56,8 @@ Templates use `{{token}}` placeholders, in file contents and in file names:
 
 | Token | Example output |
 |---|---|
-| `{{accent}}` | `#d6a65c`, any color from `palette.json` |
-| `{{accent.rgb}}` | `214,166,92`, the format `.colors` and Aurorae rc files use |
+| `{{accent}}` | `#8fecd5`, any color from `palette.json` |
+| `{{accent.rgb}}` | `143,236,213`, the format `.colors` and Aurorae rc files use |
 | `{{full_name}}`, `{{slug}}`, `{{scheme}}`, `{{lnf_id}}` | `Quil Dark`, `Quil-Dark`, `QuilDark`, `com.github.cisneros1.quil.dark` |
 
 Unknown tokens fail the build, and both variants must define the same set of colors.
@@ -78,6 +80,10 @@ Unknown tokens fail the build, and both variants must define the same set of col
 - [ ] Real screenshots for the theme previews
 - [ ] SDDM login theme and lock screen
 - [ ] Publish to the KDE Store
+
+## Credits
+
+Colors and visual direction from [BlackTurq](https://github.com/HANCORE-linux/omarchy-blackturq-theme) by HANCORE (MIT License). No BlackTurq artwork is included; Quil's wallpaper is generated from its own SVG.
 
 ## License
 
