@@ -5,7 +5,9 @@ Quil's icon themes (Quil-Dark, Quil-Light) inherit Breeze and contain only
 rounded copies of app icons. For each app this script finds its icon in the
 base theme, renders it at 512px, clips the visible artwork to a rounded square
 and saves it under the same icon name, so the dock and menus pick it up.
-Icons that already have rounded corners or are circular look unchanged.
+Every icon's artwork is scaled to the same size (FILL), so icons with extra
+built-in padding don't look smaller. Already-rounded or circular icons keep
+their shape.
 
     tools/round_icons.py                    # every app pinned in a Task Manager
     tools/round_icons.py org.kde.dolphin    # plus specific apps (desktop file ids)
@@ -34,6 +36,7 @@ APPLETS_RC = Path(os.environ.get("XDG_CONFIG_HOME", HOME / ".config")) / "plasma
 
 SIZE = 512
 RADIUS = 0.225      # corner radius as a fraction of the artwork's shorter side
+FILL = 0.90         # every icon's artwork is scaled to this fraction of the canvas
 
 
 def pinned_launchers():
@@ -113,6 +116,15 @@ def run(*args):
     return subprocess.run([str(a) for a in args], check=True, capture_output=True, text=True).stdout
 
 
+def artwork_box(png, src):
+    box = run("magick", png, "-alpha", "extract", "-threshold", "50%", "-format", "%@", "info:").strip()
+    m = re.fullmatch(r"(\d+)x(\d+)\+(\d+)\+(\d+)", box)
+    if not m:
+        raise RuntimeError(f"no visible artwork in {src}")
+    w, h, x, y = map(int, m.groups())
+    return x, y, w, h
+
+
 def round_icon(src, dest, tmp):
     base = tmp / "base.png"
     if src.suffix in (".svg", ".svgz"):
@@ -120,12 +132,13 @@ def round_icon(src, dest, tmp):
     else:
         run("magick", src, "-background", "none", "-resize", f"{SIZE}x{SIZE}", base)
     run("magick", base, "-background", "none", "-gravity", "center", "-extent", f"{SIZE}x{SIZE}", base)
-    # bounding box of the solid artwork (ignores soft drop shadows)
-    box = run("magick", base, "-alpha", "extract", "-threshold", "50%", "-format", "%@", "info:").strip()
-    m = re.fullmatch(r"(\d+)x(\d+)\+(\d+)\+(\d+)", box)
-    if not m:
-        raise RuntimeError(f"no visible artwork in {src}")
-    w, h, x, y = map(int, m.groups())
+    # Crop to the solid artwork (ignoring soft drop shadows) and scale it to FILL of
+    # the canvas, so icons with different built-in padding all appear the same size.
+    x, y, w, h = artwork_box(base, src)
+    target = round(FILL * SIZE)
+    run("magick", base, "-crop", f"{w}x{h}+{x}+{y}", "+repage", "-resize", f"{target}x{target}",
+        "-background", "none", "-gravity", "center", "-extent", f"{SIZE}x{SIZE}", base)
+    x, y, w, h = artwork_box(base, src)
     r = round(RADIUS * min(w, h))
     mask = tmp / "mask.png"
     run("magick", "-size", f"{SIZE}x{SIZE}", "xc:none", "-fill", "white",
