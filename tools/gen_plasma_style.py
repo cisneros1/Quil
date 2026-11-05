@@ -34,9 +34,9 @@ TASK_WIDTH = 78            # measured Task Manager button width in the dock (log
 TASK_CELL = 16             # task button corner cell (cross direction)
 TASK_RADIUS = 10           # hover tile corner radius
 TASK_MARGIN = 3            # padding between the button edge and the icon
-ICON_GAP = 10              # padding on the indicator side: bar + a small gap above it
+ICON_GAP = 9               # padding on the indicator side: the bar sits just below the icon
 BAR = 3                    # indicator thickness
-BAR_GAP = 3                # indicator distance from the panel-side edge
+BAR_GAP = 9                # indicator distance from the panel-side edge (tucks under the icon art)
 BAR_SHORT = 10             # indicator length for open / minimized apps
 BAR_LONG = 18              # indicator length for the active app
 
@@ -203,12 +203,14 @@ FRAMES = {
     "focus":               (False, "{{accent}}", BAR_LONG),
     "minimized":           (False, "{{fg_muted}}", BAR_SHORT),
     "attention":           (False, "{{neutral}}", BAR_LONG),
-    "normal-hover":        (True, "{{accent_dim}}", BAR_SHORT),
-    "focus-hover":         (True, "{{accent}}", BAR_LONG),
-    "minimized-hover":     (True, "{{fg_muted}}", BAR_SHORT),
-    "attention-hover":     (True, "{{neutral}}", BAR_LONG),
-    "hover":               (True, None, 0),
-    "launcher-hover":      (True, None, 0),
+    # Hovering shows no background; these keep the bar visible (and the icon's
+    # margins stable) while the pointer is over a button.
+    "normal-hover":        (False, "{{accent_dim}}", BAR_SHORT),
+    "focus-hover":         (False, "{{accent}}", BAR_LONG),
+    "minimized-hover":     (False, "{{fg_muted}}", BAR_SHORT),
+    "attention-hover":     (False, "{{neutral}}", BAR_LONG),
+    "hover":               (False, None, 0),
+    "launcher-hover":      (False, None, 0),
     "progress":            ("progress", None, 0),
 }
 TILE = ("#ffffff", 0.10, "#ffffff", 0.12)          # fill, fill opacity, outline, outline opacity

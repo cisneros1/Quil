@@ -82,7 +82,7 @@ The task indicator is sized for a 70px-tall dock (`TASK_WIDTH` in `tools/gen_pla
 ## Roadmap
 
 - [ ] Finalize the palette (contrast check for both variants)
-- [x] Glass panel and task manager (tiny running-app bar, glass tile on hover)
+- [x] Glass panel and task manager (tiny running-app bar right under each icon, no hover background)
 - [x] Rounded app icons for pinned apps
 - [ ] Plasma style SVGs: widget backgrounds, dialogs, tooltips
 - [ ] Panel shadow for the floating dock
