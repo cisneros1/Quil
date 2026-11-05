@@ -16,12 +16,13 @@ The look is based on [BlackTurq](https://github.com/HANCORE-linux/omarchy-blackt
 | Color schemes | `color-schemes/QuilDark.colors`, `QuilLight.colors` | ✅ draft palette |
 | Plasma style | `plasma/desktoptheme/Quil-Dark`, `Quil-Light` | 🟡 glass panel + task manager; other SVGs fall back to Breeze |
 | Window decorations (Aurorae) | `aurorae/themes/Quil-Dark`, `Quil-Light` | ✅ square frame, 2px turquoise border when focused |
+| Icon themes | `icons/Quil-Dark`, `Quil-Light` | ✅ Breeze plus rounded-square copies of your dock's app icons |
 | Wallpaper | `wallpapers/Quil` (light + `images_dark`) | ✅ particle wave, generated from SVG |
 | Splash screen | inside the global theme | ✅ |
 | Panel layout | inside the global theme | 🟡 Plasma default for now |
 | Global themes | `plasma/look-and-feel/com.github.cisneros1.quil.{dark,light}` | ✅ |
 
-Application style, icons and cursors use Breeze.
+Application style and cursors use Breeze. Icons are Breeze, except that `tools/round_icons.py` (run by `install.sh`) adds rounded-square copies of the icons of every app pinned in your Task Manager. After pinning a new app, run `python3 tools/round_icons.py` again (or `tools/round_icons.py <desktop-file-id>` for any other app).
 
 ## Install
 
@@ -47,9 +48,11 @@ src/
   desktoptheme/         Plasma style (add widgets/*.svg here to override Breeze)
   aurorae/              window decoration: frame, buttons, layout rc
   look-and-feel/        global theme: defaults, panel layout, splash
+  icons/                icon theme index (icons are generated on install)
   wallpaper/            wallpaper SVG, rendered to PNG at build time
 tools/build.py          template renderer
 tools/gen_plasma_style.py  generates the panel and task manager SVG templates
+tools/round_icons.py    rounds the icons of pinned apps into the Quil icon themes
 install.sh / uninstall.sh
 ```
 
@@ -63,6 +66,10 @@ Templates use `{{token}}` placeholders, in file contents and in file names:
 
 Unknown tokens fail the build, and both variants must define the same set of colors.
 
+### Dock tips
+
+The task indicator is sized for a 70px-tall dock (`TASK_WIDTH` in `tools/gen_plasma_style.py` is the measured button width). If you resize the dock, update `TASK_WIDTH` and regenerate so the bar stays tiny.
+
 ### Development loop
 
 1. Edit `palette.json` or a template in `src/`.
@@ -75,7 +82,8 @@ Unknown tokens fail the build, and both variants must define the same set of col
 ## Roadmap
 
 - [ ] Finalize the palette (contrast check for both variants)
-- [x] Glass panel and task manager (running-app bar, glass tile for the active app)
+- [x] Glass panel and task manager (tiny running-app bar, glass tile on hover)
+- [x] Rounded app icons for pinned apps
 - [ ] Plasma style SVGs: widget backgrounds, dialogs, tooltips
 - [ ] Panel shadow for the floating dock
 - [ ] Window shadows and decoration polish

@@ -31,6 +31,9 @@ while IFS= read -r rel; do
   echo "installed $DEST/$rel"
 done < build/manifest.txt
 
+# Rounded copies of the dock's app icons, inside the Quil icon themes.
+python3 tools/round_icons.py
+
 if [[ -n "$APPLY" ]]; then
   id="$(awk -v k="$APPLY" '$1 == k { print $2 }' build/lnf_ids.txt)"
   if [[ -z "$id" ]]; then

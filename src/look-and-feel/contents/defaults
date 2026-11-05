@@ -5,7 +5,7 @@ widgetStyle=Breeze
 ColorScheme={{scheme}}
 
 [kdeglobals][Icons]
-Theme={{icons}}
+Theme={{slug}}
 
 [plasmarc][Theme]
 name={{slug}}
