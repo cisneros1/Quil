@@ -14,6 +14,7 @@ import org.kde.plasma.plasmoid
 import org.kde.plasma.core as PlasmaCore
 import org.kde.kirigami as Kirigami
 import org.kde.taskmanager as TaskManager
+import org.kde.plasma.workspace.dbus as DBus
 
 PlasmoidItem {
     id: root
@@ -37,6 +38,52 @@ PlasmoidItem {
     Layout.minimumHeight: vertical ? contentLength : 0
     Layout.preferredHeight: vertical ? contentLength : -1
     Layout.maximumHeight: vertical ? contentLength : -1
+
+    // ------------------------------------------------------------------ badges
+    // Unread counts come from the quil-badges relay (src/helper/quil-badges.py),
+    // which collects the apps' Unity LauncherEntry updates. Keyed by desktop file id.
+    readonly property string badgeService: "com.github.cisneros1.Quil.Badges"
+    readonly property string badgePath: "/com/github/cisneros1/Quil/Badges"
+    property var badges: ({})
+
+    function setBadge(id: string, props: var): void {
+        const next = Object.assign({}, badges);
+        if (props && Object.keys(props).length > 0) {
+            next[id] = props;
+        } else {
+            delete next[id];
+        }
+        badges = next;
+    }
+
+    function loadBadges(): void {
+        const reply = DBus.SessionBus.asyncCall({service: badgeService, path: badgePath, iface: badgeService,
+                                                member: "GetAll", arguments: []});
+        reply.finished.connect(() => {
+            if (!reply.isError && reply.value) {
+                root.badges = reply.value;
+            }
+        });
+    }
+
+    DBus.SignalWatcher {
+        busType: DBus.BusType.Session
+        service: root.badgeService
+        path: root.badgePath
+        iface: root.badgeService
+
+        function dbusChanged(id: string, props: var): void {
+            root.setBadge(id, props);
+        }
+    }
+
+    DBus.DBusServiceWatcher {
+        busType: DBus.BusType.Session
+        watchedService: root.badgeService
+        onRegisteredChanged: registered ? root.loadBadges() : (root.badges = ({}))
+    }
+
+    Component.onCompleted: loadBadges()   // also D-Bus-activates the relay if it isn't running
 
     TaskManager.VirtualDesktopInfo { id: virtualDesktopInfo }
     TaskManager.ActivityInfo { id: activityInfo }
@@ -73,6 +120,11 @@ PlasmoidItem {
         rows: root.vertical ? -1 : 1
         columns: root.vertical ? 1 : -1
 
+        // Slide neighbors out of the way while an icon is dragged.
+        move: Transition {
+            NumberAnimation { properties: "x,y"; duration: Kirigami.Units.longDuration; easing.type: Easing.OutCubic }
+        }
+
         Repeater {
             id: repeater
 
@@ -82,6 +134,7 @@ PlasmoidItem {
                 thickness: root.thickness
                 itemLength: root.itemLength
                 iconSize: root.iconSize
+                badges: root.badges
             }
         }
     }

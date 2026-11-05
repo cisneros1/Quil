@@ -34,6 +34,29 @@ done < build/manifest.txt
 # Rounded copies of the dock's app icons, inside the Quil icon themes.
 python3 tools/round_icons.py
 
+# Badge relay for Quil Dock (unread counts), as a systemd user service.
+UNIT_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user"
+mkdir -p "$UNIT_DIR"
+cat > "$UNIT_DIR/quil-badges.service" <<UNIT
+[Unit]
+Description=Quil Dock unread badges (Unity LauncherEntry relay)
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+Type=dbus
+BusName=com.github.cisneros1.Quil.Badges
+ExecStart=/usr/bin/python3 -I "$DEST/quil/quil-badges.py"
+Restart=on-failure
+
+[Install]
+WantedBy=graphical-session.target
+UNIT
+if systemctl --user daemon-reload 2>/dev/null; then
+  systemctl --user enable quil-badges.service >/dev/null 2>&1 || true
+  systemctl --user restart quil-badges.service || echo "warning: could not start quil-badges.service" >&2
+fi
+
 if [[ -n "$APPLY" ]]; then
   id="$(awk -v k="$APPLY" '$1 == k { print $2 }' build/lnf_ids.txt)"
   if [[ -z "$id" ]]; then

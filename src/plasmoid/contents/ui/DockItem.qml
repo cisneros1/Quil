@@ -5,6 +5,7 @@
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 import QtQuick
+import QtQuick.Window
 
 import org.kde.plasma.plasmoid
 import org.kde.plasma.core as PlasmaCore
@@ -23,6 +24,19 @@ PlasmaCore.ToolTipArea {
     property real thickness
     property int itemLength
     property int iconSize
+    property var badges: ({})
+
+    // Desktop file id ("org.kde.konsole.desktop"), the key apps use for badges.
+    readonly property string appId: {
+        if (model.StorageId) {
+            return model.StorageId;
+        }
+        const url = model.LauncherUrlWithoutIcon ? model.LauncherUrlWithoutIcon.toString() : "";
+        return url.replace(/^applications:/, "").replace(/^.*\//, "");
+    }
+    readonly property var badge: badges[appId] || ({})
+    readonly property int unreadCount: badge["count-visible"] ? Math.max(0, badge.count || 0) : 0
+    readonly property bool urgent: model.IsDemandingAttention || !!badge.urgent
 
     // ----------------------------------------------------------- appearance
     readonly property int edge: Plasmoid.location          // the screen edge the dock sits on
@@ -31,7 +45,7 @@ PlasmaCore.ToolTipArea {
     readonly property int barGap: 3
     readonly property bool hasWindow: model.IsWindow || model.IsGroupParent
     readonly property color barColor: {
-        if (model.IsDemandingAttention) {
+        if (urgent) {
             return Kirigami.Theme.neutralTextColor;
         }
         if (model.IsMinimized) {
@@ -42,18 +56,27 @@ PlasmaCore.ToolTipArea {
         }
         return Qt.alpha(Kirigami.Theme.highlightColor, 0.55);
     }
-    readonly property int barLength: model.IsActive || model.IsDemandingAttention ? 14 : 6
+    readonly property int barLength: model.IsActive || urgent ? 14 : 6
 
     width: vertical ? thickness : itemLength
     height: vertical ? itemLength : thickness
 
     mainText: model.AppName || model.display || ""
-    subText: hasWindow && model.display !== model.AppName ? (model.display || "") : ""
+    subText: {
+        const parts = [];
+        if (hasWindow && model.display !== model.AppName && model.display) {
+            parts.push(model.display);
+        }
+        if (unreadCount > 0) {
+            parts.push(unreadCount === 1 ? "1 unread" : `${unreadCount} unread`);
+        }
+        return parts.join(" · ");
+    }
     location: Plasmoid.location
     active: menu.status !== PlasmaExtras.Menu.Open
 
     // Distance the icon is pushed away from the screen edge (hover lift / press dip).
-    property real lift: mouse.containsMouse ? liftDistance : 0
+    property real lift: mouse.containsMouse || mouse.dragging ? liftDistance : 0
     Behavior on lift {
         NumberAnimation { duration: Kirigami.Units.shortDuration * 1.5; easing.type: Easing.OutCubic }
     }
@@ -68,7 +91,7 @@ PlasmaCore.ToolTipArea {
         source: item.model.decoration
         active: false                               // no hover glow
         roundToIconSize: false
-        scale: mouse.pressed ? 0.92 : 1
+        scale: mouse.dragging ? 1.08 : mouse.pressed ? 0.92 : 1
         opacity: item.model.IsStartup ? startupPulse.value : 1
 
         x: {
@@ -88,6 +111,30 @@ PlasmaCore.ToolTipArea {
 
         Behavior on scale {
             NumberAnimation { duration: Kirigami.Units.shortDuration; easing.type: Easing.OutCubic }
+        }
+
+        // Unread-count badge, top-right corner of the icon.
+        Rectangle {
+            id: badgeBubble
+            visible: item.unreadCount > 0
+            readonly property int size: Math.max(14, Math.round(item.iconSize * 0.36))
+            height: size
+            width: Math.max(size, badgeLabel.implicitWidth + size * 0.55)
+            radius: size / 2
+            x: parent.width - width * 0.7
+            y: -height * 0.3
+            color: Kirigami.Theme.negativeTextColor
+            border.width: 1.5
+            border.color: Qt.alpha(Kirigami.Theme.backgroundColor, 0.6)
+
+            Text {
+                id: badgeLabel
+                anchors.centerIn: parent
+                text: item.unreadCount > 99 ? "99+" : String(item.unreadCount)
+                color: Kirigami.Theme.backgroundColor
+                font.pixelSize: Math.round(badgeBubble.size * 0.62)
+                font.weight: Font.Bold
+            }
         }
     }
 
@@ -187,8 +234,53 @@ PlasmaCore.ToolTipArea {
         anchors.fill: parent
         hoverEnabled: true
         acceptedButtons: Qt.LeftButton | Qt.MiddleButton | Qt.RightButton
+        preventStealing: dragging
+
+        // Drag to reorder: past the drag threshold the icon follows the pointer's
+        // slot, moving through the model so pinned apps keep their new order.
+        property bool dragging: false
+        property bool dragged: false
+        property point pressPoint
+
+        onPressed: event => {
+            pressPoint = Qt.point(event.x, event.y);
+            dragged = false;
+        }
+
+        onPositionChanged: event => {
+            if (!(pressedButtons & Qt.LeftButton)) {
+                return;
+            }
+            if (!dragging) {
+                const distance = Math.hypot(event.x - pressPoint.x, event.y - pressPoint.y);
+                if (distance < Application.styleHints.startDragDistance) {
+                    return;
+                }
+                dragging = true;
+                dragged = true;
+            }
+            const p = mapToItem(item.parent, event.x, event.y);
+            const along = item.vertical ? p.y : p.x;
+            const target = Math.max(0, Math.min(item.tasksModel.count - 1, Math.floor(along / item.itemLength)));
+            if (target !== item.index) {
+                item.tasksModel.move(item.index, target);
+            }
+        }
+
+        onReleased: finishDrag()
+        onCanceled: finishDrag()
+
+        function finishDrag(): void {
+            if (dragging) {
+                dragging = false;
+                item.tasksModel.syncLaunchers();   // persist the new pinned order
+            }
+        }
 
         onClicked: event => {
+            if (dragged) {
+                return;
+            }
             if (event.button === Qt.LeftButton) {
                 item.activate();
             } else if (event.button === Qt.MiddleButton) {

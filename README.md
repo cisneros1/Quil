@@ -51,6 +51,8 @@ src/
   look-and-feel/        global theme: defaults, panel layout, splash
   icons/                icon theme index (icons are generated on install)
   plasmoid/             Quil Dock widget (QML)
+  helper/               quil-badges relay for unread counts
+  dbus-services/        D-Bus activation file for the relay
   wallpaper/            wallpaper SVG, rendered to PNG at build time
 tools/build.py          template renderer
 tools/gen_plasma_style.py  generates the panel and task manager SVG templates
@@ -76,8 +78,10 @@ Plasma's Task Manager brightens icons on hover and can't animate them, so Quil s
 - Middle-click opens a new window.
 - Right-click to pin/unpin, minimize/restore or close.
 - Hovering lifts the icon slightly. A tiny bar shows the state: dim turquoise (open), bright and longer (active), gray (minimized), orange (needs attention).
+- Drag an icon to reorder the dock; pinned apps keep their new order.
+- Apps that publish unread counts (the Unity LauncherEntry API, used by most chat and mail apps) get a red badge. QML can't listen to those D-Bus signals directly, so `install.sh` sets up a small relay, `quil-badges.service` (a systemd user service running `src/helper/quil-badges.py`). Like Plasma's own Task Manager, it also claims the `com.canonical.Unity` bus name, because some apps only send badges when that name is present.
 
-To use it, add **Quil Dock** to a panel, or right-click your Task Manager → *Show Alternatives* → *Quil Dock*. Not yet supported: drag-to-reorder, hover window previews, unread badges.
+To use it, add **Quil Dock** to a panel, or right-click your Task Manager → *Show Alternatives* → *Quil Dock*. Not yet supported: hover window previews.
 
 ### Dock tips
 
@@ -98,7 +102,8 @@ If you use Plasma's own Task Manager instead of Quil Dock: its indicator is size
 - [x] Glass panel and task manager (tiny running-app bar right under each icon, no hover background)
 - [x] Rounded app icons for pinned apps
 - [x] Quil Dock widget (hover lift, no glow)
-- [ ] Quil Dock: drag to reorder, window previews, unread badges
+- [x] Quil Dock: drag to reorder, unread badges
+- [ ] Quil Dock: window previews
 - [ ] Plasma style SVGs: widget backgrounds, dialogs, tooltips
 - [ ] Panel shadow for the floating dock
 - [ ] Window shadows and decoration polish

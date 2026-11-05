@@ -30,7 +30,11 @@ COMPONENTS = {
     "look-and-feel": "plasma/look-and-feel/{{lnf_id}}",
     "icons": "icons/{{slug}}",
     "plasmoid": "plasma/plasmoids/{{id_prefix}}.dock",   # same for every variant
+    "helper": "quil",                                       # badge relay for Quil Dock
+    "dbus-services": "dbus-1/services",
 }
+# Components installed into directories shared with other packages: track their files, not the dir.
+SHARED_DIRS = {"color-schemes", "dbus-services"}
 
 TOKEN = re.compile(r"\{\{\s*([A-Za-z_]\w*)(?:\.(rgb))?\s*\}\}")
 HEX = re.compile(r"^#[0-9a-fA-F]{6}$")
@@ -134,7 +138,7 @@ def main():
         for component, target in COMPONENTS.items():
             dest_rel = render(target, ctx, colors, target)
             render_tree(SRC / component, SHARE / dest_rel, ctx, colors)
-            if component == "color-schemes":
+            if component in SHARED_DIRS:
                 manifest.update(str(p.relative_to(SHARE)) for p in (SHARE / dest_rel).iterdir())
             else:
                 manifest.add(dest_rel)

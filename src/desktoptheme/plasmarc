@@ -1,7 +1,8 @@
 # Any SVG this Plasma style does not ship (widgets/*.svg, dialogs/*.svg, ...)
 # falls back to the default Breeze Plasma style, recolored with ./colors.
+# Contrast effect off: it darkens the blurred background and hides the glass.
 [ContrastEffect]
-enabled=true
+enabled=false
 contrast=0.2
 intensity=1.0
 saturation=1.6
