@@ -14,7 +14,7 @@ The look is based on [BlackTurq](https://github.com/HANCORE-linux/omarchy-blackt
 | Component | Installed to (`~/.local/share/…`) | Status |
 |---|---|---|
 | Color schemes | `color-schemes/QuilDark.colors`, `QuilLight.colors` | ✅ draft palette |
-| Plasma style | `plasma/desktoptheme/Quil-Dark`, `Quil-Light` | 🟡 colors only; SVGs fall back to Breeze |
+| Plasma style | `plasma/desktoptheme/Quil-Dark`, `Quil-Light` | 🟡 glass panel + task manager; other SVGs fall back to Breeze |
 | Window decorations (Aurorae) | `aurorae/themes/Quil-Dark`, `Quil-Light` | ✅ square frame, 2px turquoise border when focused |
 | Wallpaper | `wallpapers/Quil` (light + `images_dark`) | ✅ particle wave, generated from SVG |
 | Splash screen | inside the global theme | ✅ |
@@ -49,6 +49,7 @@ src/
   look-and-feel/        global theme: defaults, panel layout, splash
   wallpaper/            wallpaper SVG, rendered to PNG at build time
 tools/build.py          template renderer
+tools/gen_plasma_style.py  generates the panel and task manager SVG templates
 install.sh / uninstall.sh
 ```
 
@@ -74,7 +75,9 @@ Unknown tokens fail the build, and both variants must define the same set of col
 ## Roadmap
 
 - [ ] Finalize the palette (contrast check for both variants)
-- [ ] Plasma style SVGs: panel, widget backgrounds, dialogs, tooltips
+- [x] Glass panel and task manager (running-app bar, glass tile for the active app)
+- [ ] Plasma style SVGs: widget backgrounds, dialogs, tooltips
+- [ ] Panel shadow for the floating dock
 - [ ] Window shadows and decoration polish
 - [ ] Custom panel layout
 - [ ] Real screenshots for the theme previews

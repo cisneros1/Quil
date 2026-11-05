@@ -2,9 +2,9 @@
 # falls back to the default Breeze Plasma style, recolored with ./colors.
 [ContrastEffect]
 enabled=true
-contrast=0.3
+contrast=0.2
 intensity=1.0
-saturation=1.2
+saturation=1.6
 
 [AdaptiveTransparency]
 enabled=true
