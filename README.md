@@ -17,6 +17,7 @@ The look is based on [BlackTurq](https://github.com/HANCORE-linux/omarchy-blackt
 | Plasma style | `plasma/desktoptheme/Quil-Dark`, `Quil-Light` | 🟡 glass panel + task manager; other SVGs fall back to Breeze |
 | Window decorations (Aurorae) | `aurorae/themes/Quil-Dark`, `Quil-Light` | ✅ square frame, 2px turquoise border when focused |
 | Icon themes | `icons/Quil-Dark`, `Quil-Light` | ✅ Breeze plus rounded-square copies of your dock's app icons |
+| Quil Dock widget | `plasma/plasmoids/com.github.cisneros1.quil.dock` | ✅ dock task manager: tiny state bars, hover lift, no hover glow |
 | Wallpaper | `wallpapers/Quil` (light + `images_dark`) | ✅ particle wave, generated from SVG |
 | Splash screen | inside the global theme | ✅ |
 | Panel layout | inside the global theme | 🟡 Plasma default for now |
@@ -49,6 +50,7 @@ src/
   aurorae/              window decoration: frame, buttons, layout rc
   look-and-feel/        global theme: defaults, panel layout, splash
   icons/                icon theme index (icons are generated on install)
+  plasmoid/             Quil Dock widget (QML)
   wallpaper/            wallpaper SVG, rendered to PNG at build time
 tools/build.py          template renderer
 tools/gen_plasma_style.py  generates the panel and task manager SVG templates
@@ -66,9 +68,20 @@ Templates use `{{token}}` placeholders, in file contents and in file names:
 
 Unknown tokens fail the build, and both variants must define the same set of colors.
 
+### Quil Dock
+
+Plasma's Task Manager brightens icons on hover and can't animate them, so Quil ships its own dock widget, **Quil Dock**. It uses KDE's public `org.kde.taskmanager` API with the same behavior as the Icons-Only Task Manager: pinned apps turn into their windows, and windows are grouped by app.
+
+- Click opens an app, switches to it, or minimizes it if it's already active. With several windows, each click cycles through them.
+- Middle-click opens a new window.
+- Right-click to pin/unpin, minimize/restore or close.
+- Hovering lifts the icon slightly. A tiny bar shows the state: dim turquoise (open), bright and longer (active), gray (minimized), orange (needs attention).
+
+To use it, add **Quil Dock** to a panel, or right-click your Task Manager → *Show Alternatives* → *Quil Dock*. Not yet supported: drag-to-reorder, hover window previews, unread badges.
+
 ### Dock tips
 
-The task indicator is sized for a 70px-tall dock (`TASK_WIDTH` in `tools/gen_plasma_style.py` is the measured button width). If you resize the dock, update `TASK_WIDTH` and regenerate so the bar stays tiny.
+If you use Plasma's own Task Manager instead of Quil Dock: its indicator is sized for a 70px-tall dock (`TASK_WIDTH` in `tools/gen_plasma_style.py` is the measured button width). If you resize the dock, update `TASK_WIDTH` and regenerate so the bar stays tiny.
 
 ### Development loop
 
@@ -84,6 +97,8 @@ The task indicator is sized for a 70px-tall dock (`TASK_WIDTH` in `tools/gen_pla
 - [ ] Finalize the palette (contrast check for both variants)
 - [x] Glass panel and task manager (tiny running-app bar right under each icon, no hover background)
 - [x] Rounded app icons for pinned apps
+- [x] Quil Dock widget (hover lift, no glow)
+- [ ] Quil Dock: drag to reorder, window previews, unread badges
 - [ ] Plasma style SVGs: widget backgrounds, dialogs, tooltips
 - [ ] Panel shadow for the floating dock
 - [ ] Window shadows and decoration polish

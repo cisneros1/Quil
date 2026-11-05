@@ -29,6 +29,7 @@ COMPONENTS = {
     "aurorae": "aurorae/themes/{{slug}}",
     "look-and-feel": "plasma/look-and-feel/{{lnf_id}}",
     "icons": "icons/{{slug}}",
+    "plasmoid": "plasma/plasmoids/{{id_prefix}}.dock",   # same for every variant
 }
 
 TOKEN = re.compile(r"\{\{\s*([A-Za-z_]\w*)(?:\.(rgb))?\s*\}\}")
