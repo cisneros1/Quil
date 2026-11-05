@@ -1,0 +1,18 @@
+{
+    "KPackageStructure": "aurorae",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "{{author}}"
+            }
+        ],
+        "Category": "",
+        "Description": "{{full_name}} window decoration",
+        "EnabledByDefault": true,
+        "Id": "{{slug}}",
+        "License": "{{license}}",
+        "Name": "{{full_name}}",
+        "Version": "{{version}}",
+        "Website": "{{website}}"
+    }
+}

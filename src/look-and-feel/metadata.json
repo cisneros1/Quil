@@ -1,0 +1,17 @@
+{
+    "KPackageStructure": "Plasma/LookAndFeel",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "{{author}}"
+            }
+        ],
+        "Category": "",
+        "Description": "{{description}}",
+        "Id": "{{lnf_id}}",
+        "License": "{{license}}",
+        "Name": "{{full_name}}",
+        "Version": "{{version}}",
+        "Website": "{{website}}"
+    }
+}

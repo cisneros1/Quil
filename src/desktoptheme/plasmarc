@@ -1,0 +1,10 @@
+# Any SVG this Plasma style does not ship (widgets/*.svg, dialogs/*.svg, ...)
+# falls back to the default Breeze Plasma style, recolored with ./colors.
+[ContrastEffect]
+enabled=true
+contrast=0.3
+intensity=1.0
+saturation=1.2
+
+[AdaptiveTransparency]
+enabled=true
