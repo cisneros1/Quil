@@ -1,0 +1,22 @@
+# Quil's defaults for the Darkly application style: macOS-like menus.
+# Installed to ~/.config/kdedefaults/darklyrc when Darkly is installed, so
+# anything changed in Darkly's own settings (~/.config/darklyrc) wins.
+
+[Common]
+# rounded menus, buttons and fields
+CornerRadius=10
+# roomier menu items
+MenuItemHeight=5
+
+[Style]
+# translucent menus; KWin blurs what's behind them
+MenuOpacity=75
+# translucent toolbars, tab bars and menu bars, like the system menus
+ToolBarOpacity=75
+TabBarOpacity=75
+MenuBarOpacity=75
+# translucent Dolphin: file view and sidebar (the sidebar needs its frame off)
+TransparentDolphinView=true
+DolphinViewOpacity=75
+DolphinSidebarOpacity=75
+DockWidgetDrawFrame=false

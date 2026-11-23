@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=com.github.cisneros1.Quil.Badges
+Exec=/bin/false
+SystemdService=quil-badges.service

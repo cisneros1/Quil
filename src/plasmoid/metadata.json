@@ -1,0 +1,23 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "{{author}}"
+            }
+        ],
+        "Category": "Windows and Tasks",
+        "Description": "A dock-style task manager for Quil: tiny state indicators and a gentle lift on hover",
+        "EnabledByDefault": true,
+        "Icon": "preferences-system-windows",
+        "Id": "{{id_prefix}}.dock",
+        "License": "{{license}}",
+        "Name": "Quil Dock",
+        "Version": "{{version}}",
+        "Website": "{{website}}"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0",
+    "X-Plasma-Provides": [
+        "org.kde.plasma.multitasking"
+    ]
+}
