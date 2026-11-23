@@ -91,18 +91,34 @@ def theme_chain(theme):
     return chain
 
 
+def walk_for(base, files):
+    """Paths under base named any of files. Follows directory symlinks (themes
+    such as Colloid link folders to a sibling theme) but visits each real
+    directory once, so aliases like apps@2x -> apps aren't searched twice."""
+    found, seen = [], set()
+    for dirpath, dirnames, filenames in os.walk(base, followlinks=True):
+        real = os.path.realpath(dirpath)
+        if real in seen:
+            dirnames.clear()
+            continue
+        seen.add(real)
+        found += [Path(dirpath) / f for f in filenames if f in files]
+    return found
+
+
 def find_icon(name, chain):
     def score(p):
         nums = [int(n) for n in re.findall(r"(?<![\d.])(\d{2,3})(?![\d.])", str(p.parent))]
         size = 1024 if "scalable" in p.parts or not nums else max(nums)
         return (size, p.suffix in (".svg", ".svgz"))
 
+    files = {f"{name}.{ext}" for ext in ("svg", "svgz", "png")}
     for theme in chain:
         found = []
         for root in ICON_ROOTS:
             base = root / theme
             if base.is_dir():
-                found += [p for ext in ("svg", "svgz", "png") for p in base.rglob(f"{name}.{ext}")]
+                found += walk_for(base, files)
         if found:
             return max(found, key=score)
     for ext in ("svg", "png", "xpm"):
@@ -154,6 +170,11 @@ def main():
     palette = json.loads((ROOT / "palette.json").read_text())
     meta = palette["meta"]
     apps = pinned_launchers() + sys.argv[1:]
+    for variant in palette["variants"].values():
+        # KDE treats an icon theme with none of its listed directories as
+        # invalid and drops to hicolor, losing Colloid too. Keep apps/512.
+        (DATA_HOME / "icons" / f"{meta['name']}-{variant['label']}" / f"apps/{SIZE}").mkdir(
+            parents=True, exist_ok=True)
     if not apps:
         print("round_icons: no pinned apps found")
         return

@@ -1,8 +1,20 @@
 [kdeglobals][KDE]
-widgetStyle=Breeze
+widgetStyle={{widget_style}}
 
 [kdeglobals][General]
 ColorScheme={{scheme}}
+font={{font}}
+menuFont={{font}}
+toolBarFont={{font}}
+smallestReadableFont={{font_small}}
+fixed={{font_fixed}}
+# Not read from here. Plasma (6.8) only applies a global theme's fonts if it
+# finds activeFont under General (or font under WM), the reverse of where it
+# reads them, so this line makes it apply the fonts above and below.
+activeFont={{font_title}}
+
+[kdeglobals][WM]
+activeFont={{font_title}}
 
 [kdeglobals][Icons]
 Theme={{slug}}
@@ -14,7 +26,7 @@ name={{slug}}
 Image={{name}}
 
 [kcminputrc][Mouse]
-cursorTheme=breeze_cursors
+cursorTheme={{cursor_theme}}
 
 [kwinrc][WindowSwitcher]
 LayoutName=org.kde.breeze.desktop
@@ -23,7 +35,7 @@ LayoutName=org.kde.breeze.desktop
 LayoutName=org.kde.breeze.desktop
 
 [kwinrc][org.kde.kdecoration2]
-library=org.kde.kwin.aurorae
+library={{decoration_plugin}}
 theme=__aurorae__svg__{{slug}}
 
 [ksplashrc][KSplash]

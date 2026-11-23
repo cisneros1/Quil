@@ -6,16 +6,21 @@ build/share/ mirrors ~/.local/share, so installing is a plain copy.
 Templates use {{token}} placeholders:
   {{accent}}      -> "#d6a65c"      (any color in palette.json, as hex)
   {{accent.rgb}}  -> "214,166,92"   (KDE .colors / rc format)
+  {{accent 30% on view}} -> "#2e4c45"  (two palette colors mixed)
   {{full_name}}   -> "Quil Dark"    (metadata; see context() below)
+  {{font}}        -> "Inter,10,-1,5,400,..."   (fonts block of palette.json)
 Tokens work in file *names* too, e.g. src/color-schemes/{{scheme}}.colors.
 """
 
 import json
+import os
 import re
 import shutil
 import subprocess
 import sys
 from pathlib import Path
+
+import gen_cursors
 
 ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "src"
@@ -32,11 +37,14 @@ COMPONENTS = {
     "plasmoid": "plasma/plasmoids/{{id_prefix}}.dock",   # same for every variant
     "helper": "quil",                                       # badge relay for Quil Dock
     "dbus-services": "dbus-1/services",
+    "konsole": "konsole",                                   # terminal colors + profile
+    "syntax": "org.kde.syntax-highlighting/themes",         # Kate, KWrite, KDevelop
 }
 # Components installed into directories shared with other packages: track their files, not the dir.
-SHARED_DIRS = {"color-schemes", "dbus-services"}
+SHARED_DIRS = {"color-schemes", "dbus-services", "konsole", "syntax"}
 
 TOKEN = re.compile(r"\{\{\s*([A-Za-z_]\w*)(?:\.(rgb))?\s*\}\}")
+MIX = re.compile(r"\{\{\s*([A-Za-z_]\w*)\s+(\d+)%\s+on\s+([A-Za-z_]\w*)\s*\}\}")
 HEX = re.compile(r"^#[0-9a-fA-F]{6}$")
 
 
@@ -44,7 +52,33 @@ def die(msg):
     sys.exit(f"build: error: {msg}")
 
 
-def context(meta, key, variant):
+def have_qt_plugin(rel):
+    dirs = [d for d in os.environ.get("QT_PLUGIN_PATH", "").split(":") if d]
+    if shutil.which("qtpaths6"):
+        dirs.append(subprocess.run(["qtpaths6", "--query", "QT_INSTALL_PLUGINS"],
+                                   capture_output=True, text=True).stdout.strip())
+    dirs.append("/usr/lib/qt6/plugins")
+    return any((Path(d) / rel).exists() for d in dirs if d)
+
+
+def widget_style():
+    """Darkly (rounded, translucent menus) when it's installed, else Breeze."""
+    return "Darkly" if have_qt_plugin("styles/darkly6.so") else "Breeze"
+
+
+def decoration_plugin():
+    """Aurorae's newer engine for SVG themes where it exists (KWin moves SVG themes
+    to it at login anyway), else the original one."""
+    v2 = "org.kde.kwin.aurorae.v2"
+    return v2 if have_qt_plugin(f"org.kde.kdecoration3/{v2}.so") else "org.kde.kwin.aurorae"
+
+
+def qfont(family, size, weight=400):
+    """A font in the QFont::toString() form kdeglobals uses."""
+    return f"{family},{size},-1,5,{weight},0,0,0,0,0,0,0,0,0,0,1"
+
+
+def context(meta, fonts, style, cursors, key, variant):
     name, label = meta["name"], variant["label"]
     return {
         **meta,
@@ -56,10 +90,28 @@ def context(meta, key, variant):
         "lnf_id": f"{meta['id_prefix']}.{key}",
         "icons": variant["icons"],
         "description": variant["description"],
+        "font": qfont(fonts["ui"], fonts["size"]),
+        "font_small": qfont(fonts["ui"], fonts["small_size"]),
+        "font_title": qfont(fonts["ui"], fonts["size"], fonts["title_weight"]),
+        "font_fixed": qfont(fonts["mono"], fonts["size"]),
+        "widget_style": style,
+        "decoration_plugin": decoration_plugin(),
+        # Quil's cursors live inside its icon themes; without them, Breeze's
+        "cursor_theme": f"{name}-{label}" if cursors else gen_cursors.SOURCE_THEME,
+        "shadow_opacity": variant["shadow_opacity"],   # window shadow strength, 0 to 1
     }
 
 
 def render(text, ctx, colors, where):
+    def mix(m):
+        top, percent, base = m.group(1), int(m.group(2)), m.group(3)
+        if top not in colors or base not in colors or percent > 100:
+            die(f"{where}: unknown token {m.group(0)}")
+        a, b = (colors[c].lstrip("#") for c in (top, base))
+        return "#" + "".join(
+            f"{round((int(a[i:i + 2], 16) * percent + int(b[i:i + 2], 16) * (100 - percent)) / 100):02x}"
+            for i in (0, 2, 4))
+
     def sub(m):
         name, fmt = m.group(1), m.group(2)
         if name in colors:
@@ -68,7 +120,7 @@ def render(text, ctx, colors, where):
         if name in ctx and not fmt:
             return str(ctx[name])
         die(f"{where}: unknown token {m.group(0)}")
-    return TOKEN.sub(sub, text)
+    return TOKEN.sub(sub, MIX.sub(mix, text))
 
 
 def load_palette():
@@ -113,6 +165,11 @@ def main():
     need("magick")
     palette = load_palette()
     meta = palette["meta"]
+    style = widget_style()
+    print(f"application style: {style}")
+    cursors = gen_cursors.source_dir() is not None
+    if not cursors:
+        print(f"note: no {gen_cursors.SOURCE_THEME} SVG cursors found, so Quil keeps the Breeze cursors")
 
     shutil.rmtree(BUILD, ignore_errors=True)
     SHARE.mkdir(parents=True)
@@ -132,7 +189,7 @@ def main():
     }, indent=4) + "\n")
 
     for key, variant in palette["variants"].items():
-        ctx, colors = context(meta, key, variant), variant["colors"]
+        ctx, colors = context(meta, palette["fonts"], style, cursors, key, variant), variant["colors"]
         print(f"building {ctx['full_name']}")
 
         for component, target in COMPONENTS.items():
@@ -143,6 +200,10 @@ def main():
             else:
                 manifest.add(dest_rel)
         lnf_ids.append(f"{key} {ctx['lnf_id']}")
+
+        # Cursors: Breeze's, recolored, inside the icon theme.
+        if cursors:
+            gen_cursors.generate(colors, SHARE / "icons" / ctx["slug"])
 
         # Wallpaper: one package, light image in images/, dark in images_dark/.
         svg = BUILD / f"wallpaper-{key}.svg"

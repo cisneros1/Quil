@@ -73,7 +73,31 @@ PlasmaCore.ToolTipArea {
         return parts.join(" · ");
     }
     location: Plasmoid.location
-    active: menu.status !== PlasmaExtras.Menu.Open
+    active: menu.status !== PlasmaExtras.Menu.Open && !mouse.dragging
+
+    // Apps with open windows get live window previews instead of plain text;
+    // the tooltip stays open while the pointer moves into it.
+    mainItem: hasWindow ? previews : null
+    interactive: hasWindow
+    onAboutToShow: previews.streaming = hasWindow
+    onToolTipVisibleChanged: shown => {
+        if (!shown) {
+            previews.streaming = false;
+        }
+    }
+
+    WindowPreviews {
+        id: previews
+        visible: false
+        tasksModel: item.tasksModel
+        taskIndex: item.index
+        isGroup: !!item.model.IsGroupParent
+        task: item.model
+        title: item.mainText
+        subtitle: item.unreadCount > 0 ? (item.unreadCount === 1 ? "1 unread" : `${item.unreadCount} unread`) : ""
+        maxWidth: Screen.width * 0.8
+        onDone: item.hideImmediately()
+    }
 
     // Distance the icon is pushed away from the screen edge (hover lift / press dip).
     property real lift: mouse.containsMouse || mouse.dragging ? liftDistance : 0

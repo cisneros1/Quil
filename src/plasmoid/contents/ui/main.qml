@@ -23,7 +23,7 @@ PlasmoidItem {
     // Thickness available to each item, across the panel.
     readonly property real thickness: vertical ? width : height
     readonly property int iconSize: Math.max(Kirigami.Units.iconSizes.small,
-                                             Math.round(thickness - barSpace - 2 * Math.max(2, thickness * 0.06)))
+                                             Math.round(thickness - barSpace - 2 * Math.max(2, thickness * 0.04)))
     readonly property int barSpace: 6                     // gap + bar thickness
     readonly property int itemLength: iconSize + Math.round(Math.max(8, thickness * 0.28))
     readonly property real contentLength: Math.max(itemLength, repeater.count * itemLength)

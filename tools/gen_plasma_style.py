@@ -22,7 +22,7 @@ ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "src" / "desktoptheme"
 
 # ------------------------------------------------------------------ tunables
-PANEL_RADIUS = 18          # corner radius of the panel / floating dock
+PANEL_RADIUS = 15          # corner radius of the panel / floating dock
 PANEL_MARGIN = 6           # frame margin (Plasma's minimum widget inset)
 DOCK_PADDING = 4           # extra panel padding (Plasma adds its small spacing, ~4px)
 GLASS_ALPHA = 0.18         # panel body opacity when KWin blur is available
@@ -39,6 +39,21 @@ BAR = 3                    # indicator thickness
 BAR_GAP = 9                # indicator distance from the panel-side edge (tucks under the icon art)
 BAR_SHORT = 10             # indicator length for open / minimized apps
 BAR_LONG = 18              # indicator length for the active app
+
+# Popups (app launcher, system tray, calendar, notifications) and tooltips:
+# rounded glass with a soft shadow, like macOS menus.
+POPUP_RADIUS = 12          # popup corner radius
+POPUP_MARGIN = 7           # padding between the popup edge and its contents
+TOOLTIP_RADIUS = 9
+TOOLTIP_MARGIN = 6
+POPUP_GLASS_ALPHA = 0.78   # popup body opacity when KWin blur is available
+POPUP_SOLID_ALPHA = 0.98   # popup body opacity without blur
+POPUP_RIM_ALPHA = 0.22     # turquoise outline opacity
+POPUP_SHEEN_ALPHA = 0.08   # white highlight along the top inner edge
+SHADOW_SIZE = 16           # how far the shadow reaches outside the popup
+SHADOW_ALPHA = 0.30        # shadow darkness right at the popup's edge
+# shadow falloff: (distance from the edge as a fraction of SHADOW_SIZE, fraction of SHADOW_ALPHA)
+SHADOW_STOPS = [(0, 1), (0.2, 0.62), (0.45, 0.28), (0.7, 0.09), (1, 0)]
 
 CORNERS = {"topleft": (-1, -1), "topright": (1, -1), "bottomleft": (-1, 1), "bottomright": (1, 1)}
 EDGES = ["top", "bottom", "left", "right"]
@@ -191,6 +206,79 @@ def panel_svg(alpha):
     return svg_doc(hx + 40, block, body, "panel background")
 
 
+# ------------------------------------------------------- popups and tooltips
+def shadow_frame(ox, oy, r):
+    """shadow-* tiles for KWin. Each tile reaches SHADOW_SIZE outside the popup
+    and r inside it (transparent there), so the corners follow the rounding."""
+    S = SHADOW_SIZE
+    C = S + r
+    defs, out = [], []
+    stops = lambda start: "".join(  # noqa: E731
+        f'<stop offset="{f(round(start + (1 - start) * d, 4))}" stop-color="#000" '
+        f'stop-opacity="{f(round(SHADOW_ALPHA * a, 4))}"/>' for d, a in SHADOW_STOPS)
+    for name, x, y, w, h in cells(ox, oy, C, C):
+        parts = [bounds(x, y, w, h)]
+        gid = f"shadow-fill-{name}"
+        if name in CORNERS:
+            sx, sy = CORNERS[name]
+            cx = x + (C if sx < 0 else 0)    # center of the popup's rounded corner
+            cy = y + (C if sy < 0 else 0)
+            defs.append(f'    <radialGradient id="{gid}" gradientUnits="userSpaceOnUse" '
+                        f'cx="{f(cx)}" cy="{f(cy)}" r="{f(C)}">{stops(r / C)}</radialGradient>')
+            # the cell minus the quarter disc the popup itself covers
+            d = (f"M{f(x)},{f(y)} H{f(x + w)} V{f(y + h)} H{f(x)} Z "
+                 + wedge(cx, cy, sx, sy, r))
+            parts.append(f'<path d="{d}" fill="url(#{gid})" fill-rule="evenodd"/>')
+        elif name != "center":
+            # gradient from the popup's edge outwards
+            x1, y1, x2, y2 = {"top": (0, 1, 0, 0), "bottom": (0, 0, 0, 1),
+                              "left": (1, 0, 0, 0), "right": (0, 0, 1, 0)}[name]
+            defs.append(f'    <linearGradient id="{gid}" x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}">'
+                        f"{stops(0)}</linearGradient>")
+            sh = {"top": (x, y, w, S), "bottom": (x, y + r, w, S),
+                  "left": (x, y, S, h), "right": (x + r, y, S, h)}[name]
+            parts.append(rect(*sh, f"url(#{gid})"))
+        out.append(group(f"shadow-{name}", parts))
+    fw, fh = frame_size(C, C)
+    hx = ox + fw + 10
+    for i, side in enumerate(EDGES):
+        out.append(group(f"shadow-hint-{side}-margin", [bounds(hx + i * (S + 4), oy, S, S)]))
+    return defs, out, hx + 4 * (S + 4), fh
+
+
+def popup_svg(alpha, radius, margin, comment):
+    K = radius
+    block = 3 * K + 4
+    body = []
+    for name, x, y, w, h in cells(0, 0, K, K, K):
+        parts = [bounds(x, y, w, h)]
+        if name == "center":
+            parts += [rect(x, y, w, h, "{{bg}}", alpha), rect(x, y, w, h, "url(#tint)")]
+        else:
+            parts += outline(name, x, y, w, h, K, "{{accent}}", POPUP_RIM_ALPHA)
+            if name in ("top", "topleft", "topright"):
+                parts += outline(name, x, y, w, h, K, "#ffffff", POPUP_SHEEN_ALPHA, inset=1.5)
+        body.append(group(name, parts))
+    body += mask_frame("", block + 10, 0, K, K, K)
+    hx = 2 * (block + 10)
+    for i, side in enumerate(EDGES):
+        body.append(group(f"hint-{side}-margin", [bounds(hx + i * 10, 0, margin, margin)]))
+    body.append(group("hint-compose-over-border", [bounds(hx, 20, 4, 4)]))
+    shadow_defs, shadow, width, height = shadow_frame(hx + 50, 0, K)
+    body += shadow
+    defs = [
+        "  <defs>",
+        # faint white sheen at the top, fading into a hint of turquoise
+        '    <linearGradient id="tint" x1="0" y1="0" x2="0" y2="1">'
+        '<stop offset="0" stop-color="#ffffff" stop-opacity="0.05"/>'
+        '<stop offset="0.4" stop-color="#ffffff" stop-opacity="0"/>'
+        '<stop offset="1" stop-color="{{accent}}" stop-opacity="0.04"/></linearGradient>',
+        *shadow_defs,
+        "  </defs>",
+    ]
+    return svg_doc(f(width), f(max(block, height)), defs + body, comment)
+
+
 # ------------------------------------------------------------- task manager
 # Each Task Manager button is a frame. The indicator bar lives in the edge cell
 # that faces the screen edge; its corner cells are wide, so the visible bar is
@@ -288,6 +376,11 @@ def main():
         OUT / "translucent" / "widgets" / "panel-background.svg": panel_svg(GLASS_ALPHA),
         OUT / "widgets" / "tasks.svg": tasks_svg(),
     }
+    for sub, alpha in (("", POPUP_SOLID_ALPHA), ("translucent/", POPUP_GLASS_ALPHA)):
+        files[OUT / f"{sub}dialogs" / "background.svg"] = popup_svg(
+            alpha, POPUP_RADIUS, POPUP_MARGIN, "popup background")
+        files[OUT / f"{sub}widgets" / "tooltip.svg"] = popup_svg(
+            alpha, TOOLTIP_RADIUS, TOOLTIP_MARGIN, "tooltip background")
     for p, text in files.items():
         p.parent.mkdir(parents=True, exist_ok=True)
         p.write_text(text)
